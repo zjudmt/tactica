@@ -1,0 +1,3 @@
+D:
+cd D:\Xinli\Univ\SRTP\Summer\tactica
+g++ Cluster.cpp tactica.cpp -o tactica
