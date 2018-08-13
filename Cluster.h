@@ -39,5 +39,6 @@ vector<Cluster> AHCluster(vector<Phase> v_phase, int k);
 int Find(vector<int> &a, int index);
 void Union(vector<int> &a, int c1, int c2);
 void printClusters(std::vector<Cluster> v);
+void outputClusters(std::vector<Cluster> v, string team);
 
 #endif

@@ -182,7 +182,8 @@ int main()
 {	
 	int front,rear; 
 	vector<Event> v_event;
-	vector<Phase> v_phase;
+	vector<Phase> v_phase_A;
+	vector<Phase> v_phase_B;
 	readPassEvents("pass.txt",v_event);
 	vector<Event>::iterator itr;
 	sort(v_event.begin(),v_event.end());
@@ -200,7 +201,10 @@ int main()
 			Phase temp;
 			for (int i = front; i <= rear; i++)
 				temp.push_back(v_event[i]);
-			v_phase.push_back(temp);
+			if(v_event[front].team[0] == 'A')
+				v_phase_A.push_back(temp);
+			else
+				v_phase_B.push_back(temp);
 		}
 
 		front = rear + 1;
@@ -208,17 +212,25 @@ int main()
 	}
 
 	cout << "***********" << endl;
-	vector<Event>::iterator itr1;
-	for (int i = 0; i < v_phase.size(); i++) {
-		for (itr1 = v_phase[i].begin(); itr1 < v_phase[i].end(); itr1++) {
-			cout << itr1->frame << "  " << itr1->team << "  (" << itr1->location.x << "," << itr1->location.y << ")  " << itr1->event_type << endl;
-		}
-		cout << "***********" << endl;
-	}
+	// vector<Event>::iterator itr1;
+	// for (int i = 0; i < v_phase.size(); i++) {
+	// 	for (itr1 = v_phase[i].begin(); itr1 < v_phase[i].end(); itr1++) {
+	// 		cout << itr1->frame << "  " << itr1->team << "  (" << itr1->location.x << "," << itr1->location.y << ")  " << itr1->event_type << endl;
+	// 	}
+	// 	cout << "***********" << endl;
+	// }
 
-	vector<Cluster> clusters;
-	clusters = AHCluster(v_phase, 10);
-	printClusters(clusters);	
+	cout << "CLUSTER PAHSE OF ARGENTINA" << endl;
+	vector<Cluster> clusters_A;
+	clusters_A = AHCluster(v_phase_A, 5); //Cluster here, change K if needed
+	printClusters(clusters_A);
+	outputClusters(clusters_A, "TeamA");
+
+	cout << "CLUSTER PAHSE OF BRAZIL" << endl;
+	vector<Cluster> clusters_B;
+	clusters_B = AHCluster(v_phase_B, 5); //Cluster here, change K if needed
+	printClusters(clusters_B);	
+	outputClusters(clusters_B, "TeamB");
 
 	return 0;
 }

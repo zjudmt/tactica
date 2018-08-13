@@ -1,5 +1,31 @@
+#include <fstream>
 #include "Cluster.h"
+
 using namespace std;
+
+
+int Find(vector<int> &a, int index)
+{
+	int ret;
+	if( a[index] < 0)
+		ret = index;
+	else
+		ret = Find(a, a[index]);
+
+	return ret;
+}
+
+void Union(vector<int> &a, int c1, int c2)
+{
+	if( a[c1] < a[c2] ){
+		a[c1] += a[c2];
+		a[c2] = c1;
+	}
+	else{
+		a[c2] += a[c1];
+		a[c1] = c2;
+	}
+}
 
 // 聚类函数，输入phase的向量以及聚类目标数k，返回聚类结果的并查集
 std::vector<Cluster> AHCluster(vector<Phase> v_phase, int k){
@@ -35,7 +61,7 @@ std::vector<Cluster> AHCluster(vector<Phase> v_phase, int k){
 	for (int i = 1; i < Set.size(); ++i)
 	{
 		bool flag = insertPhase(v_cluster ,v_phase[i-1], Find(Set, i) );
-		cout << i << " " << flag << endl;
+		// cout << i << " " << flag << endl;
 		if(!flag){
 			int root = Find(Set, i);
 			Cluster c(root);
@@ -61,36 +87,38 @@ bool insertPhase(vector<Cluster> &v, Phase p, int r){
 	return false;
 }
 
-int Find(vector<int> &a, int index)
-{
-	int ret;
-	if( a[index] < 0)
-		ret = index;
-	else
-		ret = Find(a, a[index]);
-
-	return ret;
-}
-
-void Union(vector<int> &a, int c1, int c2)
-{
-	if( a[c1] < a[c2] ){
-		a[c1] += a[c2];
-		a[c2] = c1;
-	}
-	else{
-		a[c2] += a[c1];
-		a[c1] = c2;
-	}
-}
-
 void printClusters(std::vector<Cluster> v)
 {
 	cout << "Cluster Number: " << v.size() << endl;
 	for (std::vector<Cluster>::iterator i = v.begin(); i != v.end(); ++i)
 	{
 		cout << i->root << endl;
-		// for (vector<Phase>::iterator j = v->phases.begin(); j != v->phases.end(); ++j)
+		for (vector<Phase>::iterator j = i->phases.begin(); j != i->phases.end(); ++j){
+			for (std::vector<Event>::iterator ie = (*j).begin(); ie != (*j).end(); ++ie)
+			{
+				cout << ie->team << " " << ie->event_type << " |";
+			}
+			cout << endl;
+		}
 		cout << "#########" << endl;
 	}
+}
+
+void outputClusters(std::vector<Cluster> v, string team)
+{
+	ofstream file(team +"_Cluster.txt");
+	for (std::vector<Cluster>::iterator i = v.begin(); i != v.end(); ++i)
+	{
+		for (vector<Phase>::iterator j = i->phases.begin(); j != i->phases.end(); ++j){
+			for (std::vector<Event>::iterator ie = (*j).begin(); ie != (*j).end(); ++ie)
+			{
+				// file << ie->team << " " << ie->event_type << " |";
+				file << ie->event_type << " ";
+			}
+			file << endl;
+		}
+		file << endl;
+	}
+	file << "END" << endl;
+	file.close();
 }
