@@ -224,13 +224,13 @@ int main()
 	vector<Cluster> clusters_A;
 	clusters_A = AHCluster(v_phase_A, 5); //Cluster here, change K if needed
 	printClusters(clusters_A);
-	outputClusters(clusters_A, "TeamA");
+	outputClusters(clusters_A, "Team1");
 
 	cout << "CLUSTER PAHSE OF BRAZIL" << endl;
 	vector<Cluster> clusters_B;
 	clusters_B = AHCluster(v_phase_B, 5); //Cluster here, change K if needed
 	printClusters(clusters_B);	
-	outputClusters(clusters_B, "TeamB");
+	outputClusters(clusters_B, "Team2");
 
 	return 0;
 }

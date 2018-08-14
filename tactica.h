@@ -1,12 +1,13 @@
 #ifndef __TACTICA_H__
 #define __TACTICA_H__
 
-#include<stdio.h>
+#include <stdio.h>
 #include <iostream>
 #include <math.h>
 #include <algorithm>
 #include <string.h>
 #include <vector>
+#include <string>
 using namespace std;
 
 enum EventType

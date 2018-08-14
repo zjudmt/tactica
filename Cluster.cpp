@@ -106,19 +106,22 @@ void printClusters(std::vector<Cluster> v)
 
 void outputClusters(std::vector<Cluster> v, string team)
 {
-	ofstream file(team +"_Cluster.txt");
 	for (std::vector<Cluster>::iterator i = v.begin(); i != v.end(); ++i)
 	{
+		int index = i - v.begin();
+		string filepath = "Cluster\\" + team + "Cluster" + to_string(index) + ".txt";
+		cout << filepath << endl;
+		ofstream file(filepath);
 		for (vector<Phase>::iterator j = i->phases.begin(); j != i->phases.end(); ++j){
-			for (std::vector<Event>::iterator ie = (*j).begin(); ie != (*j).end(); ++ie)
+			file << '[' ;
+			for (std::vector<Event>::iterator ie = (*j).begin(); ie < (*j).end() - 1; ++ie)
 			{
 				// file << ie->team << " " << ie->event_type << " |";
-				file << ie->event_type << " ";
+				file << ie->event_type << ",";
 			}
-			file << endl;
+			file << ((*j).end() - 1)->event_type;
+			file << "]" << endl;
 		}
-		file << endl;
+		file.close();
 	}
-	file << "END" << endl;
-	file.close();
 }
