@@ -17,6 +17,7 @@ enum ZoneType getZoneType(Coordinate location)
 		return BOX;
 }
 
+// refine the data
 enum EventType setPassType(Coordinate p1,Coordinate p2)
 {
 	switch(getZoneType(p1))
@@ -124,6 +125,7 @@ enum EventType setPassType(Coordinate p1,Coordinate p2)
 	}
 }
 
+//read file
 bool readPassEvents(const char* filename,vector<Event> &event)
 {
 	FILE *fp;
@@ -156,11 +158,13 @@ bool readPassEvents(const char* filename,vector<Event> &event)
 	return true;
 }
 
+// calculate the delta value using the algorithm given in the paper
 double deltaFunc(Event e1,Event e2)
 {
 	return sqrt(pow(e1.location.x-e2.location.x,2)+pow(e1.location.y-e2.location.y,2));
 }
 
+// calculate the "Distance" of 2 events, which is the benchmark of clustering
 double getDeltaDistance(vector<Event> &p1,vector<Event> &p2)
 {
 	const int M=p1.size();
@@ -182,13 +186,11 @@ int main()
 {	
 	int front,rear; 
 	vector<Event> v_event;
-	vector<Phase> v_phase_A;
-	vector<Phase> v_phase_B;
+	vector<Phase> v_phase_A; // team A
+	vector<Phase> v_phase_B; // team B
 	readPassEvents("pass.txt",v_event);
 	vector<Event>::iterator itr;
 	sort(v_event.begin(),v_event.end());
-	// for(itr=v_event.begin();itr<v_event.end();itr++)
-	// 	cout<<itr->frame<<"  "<<itr->team<<"  ("<<itr->location.x<<","<<itr->location.y<<")  "<<itr->event_type<<endl;
 
 	front = 0, rear = 0;
 	while (rear != v_event.size())
@@ -201,6 +203,7 @@ int main()
 			Phase temp;
 			for (int i = front; i <= rear; i++)
 				temp.push_back(v_event[i]);
+			// seperating the phases of 2 teams
 			if(v_event[front].team[0] == 'A')
 				v_phase_A.push_back(temp);
 			else
@@ -211,20 +214,13 @@ int main()
 		rear = front;
 	}
 
-	cout << "***********" << endl;
-	// vector<Event>::iterator itr1;
-	// for (int i = 0; i < v_phase.size(); i++) {
-	// 	for (itr1 = v_phase[i].begin(); itr1 < v_phase[i].end(); itr1++) {
-	// 		cout << itr1->frame << "  " << itr1->team << "  (" << itr1->location.x << "," << itr1->location.y << ")  " << itr1->event_type << endl;
-	// 	}
-	// 	cout << "***********" << endl;
-	// }
-
 	cout << "CLUSTER PAHSE OF ARGENTINA" << endl;
 	vector<Cluster> clusters_A;
 	clusters_A = AHCluster(v_phase_A, 5); //Cluster here, change K if needed
-	printClusters(clusters_A);
-	outputClusters(clusters_A, "Team1");
+	printClusters(clusters_A); //in cluster.cpp
+	outputClusters(clusters_A, "Team1"); //incluster.cpp
+
+	cout << endl << endl;
 
 	cout << "CLUSTER PAHSE OF BRAZIL" << endl;
 	vector<Cluster> clusters_B;

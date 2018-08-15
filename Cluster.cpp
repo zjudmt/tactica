@@ -32,9 +32,11 @@ std::vector<Cluster> AHCluster(vector<Phase> v_phase, int k){
 	vector<int> Set;
 	vector<dist> v_dist;
 	int cur_k = v_phase.size();
+	// initialize the disjoint set
 	for (int i = 0; i <= cur_k; ++i)
 		Set.push_back(-1);
 
+	// initialize the vector of distances
 	for (int i = 0; i < cur_k; i++)
 		for (int j = 0; j < i; ++j)
 		{
@@ -43,6 +45,7 @@ std::vector<Cluster> AHCluster(vector<Phase> v_phase, int k){
 			v_dist.push_back(d);
 		}
 
+	// clustering using the distance and the disjoint set
 	sort(v_dist.begin(), v_dist.end());
 	for (std::vector<dist>::iterator ptr = v_dist.begin(); ptr != v_dist.end(); ++ptr)
 	{
@@ -56,12 +59,12 @@ std::vector<Cluster> AHCluster(vector<Phase> v_phase, int k){
 		}
 	}
 
+	// genertaing clusters and counting shot numbers using the results above
 	vector<Cluster> v_cluster;
 	cout << Set.size() << endl;
 	for (int i = 1; i < Set.size(); ++i)
 	{
 		bool flag = insertPhase(v_cluster ,v_phase[i-1], Find(Set, i) );
-		// cout << i << " " << flag << endl;
 		if(!flag){
 			int root = Find(Set, i);
 			Cluster c(root);
@@ -71,15 +74,24 @@ std::vector<Cluster> AHCluster(vector<Phase> v_phase, int k){
 				cout << "Phase classification error at index: " << i << endl;
 		}
 	}
-	cout << "Cluster end" << endl;
+	cout << "Cluster over" << endl;
+
+	// sort according to shot number
+	sort(v_cluster.begin(), v_cluster.end());
 
 	return v_cluster;
 }
 
+// insert a phase into the cluster it belongs
 bool insertPhase(vector<Cluster> &v, Phase p, int r){
 	for (std::vector<Cluster>::iterator i = v.begin(); i != v.end(); ++i){
 		if(i->root == r){
 			i->phases.push_back(p);
+			//counting shots here
+			if ( (p.end() - 1)->event_type >= 35 ){
+				cout << "shot detected" << endl;
+				i->shot ++;
+			}
 			return true;
 		}
 	}
@@ -92,7 +104,7 @@ void printClusters(std::vector<Cluster> v)
 	cout << "Cluster Number: " << v.size() << endl;
 	for (std::vector<Cluster>::iterator i = v.begin(); i != v.end(); ++i)
 	{
-		cout << i->root << endl;
+		cout << "root:" << i->root << " shot:" << i->shot << endl;
 		for (vector<Phase>::iterator j = i->phases.begin(); j != i->phases.end(); ++j){
 			for (std::vector<Event>::iterator ie = (*j).begin(); ie != (*j).end(); ++ie)
 			{
@@ -104,19 +116,19 @@ void printClusters(std::vector<Cluster> v)
 	}
 }
 
+
+// write results to files with certain formats
 void outputClusters(std::vector<Cluster> v, string team)
 {
 	for (std::vector<Cluster>::iterator i = v.begin(); i != v.end(); ++i)
 	{
 		int index = i - v.begin();
 		string filepath = "Cluster\\" + team + "Cluster" + to_string(index) + ".txt";
-		cout << filepath << endl;
 		ofstream file(filepath);
 		for (vector<Phase>::iterator j = i->phases.begin(); j != i->phases.end(); ++j){
 			file << '[' ;
 			for (std::vector<Event>::iterator ie = (*j).begin(); ie < (*j).end() - 1; ++ie)
 			{
-				// file << ie->team << " " << ie->event_type << " |";
 				file << ie->event_type << ",";
 			}
 			file << ((*j).end() - 1)->event_type;

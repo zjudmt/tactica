@@ -28,10 +28,17 @@ class Cluster
 public:
 	Cluster(int _root){
 		root = _root;
+		shot = 0;
 		// cout << "Cluster(): " << root << endl;
 	}
 	vector<Phase> phases;
 	int root;
+	int shot;
+
+	bool operator<(const Cluster &c) const
+	{
+		return this->shot < c.shot;
+	}
 };
 
 bool insertPhase(vector<Cluster> &v, Phase p, int r);

@@ -12,16 +12,15 @@ def getweight(e):
     else:
         return w_shot
     
-
+# 模式的类
 class Pattern:
-    """docstring for Pattern"""
     def __init__(self, freq, flow):
         super(Pattern, self).__init__()
         self.freq = freq
         self.flow = flow
         self.score = self.score()
 
-
+    # 在构造函数中直接计算出该模式的Score方便排序
     def score(self):
         event_value = 0
         for x in self.flow:
@@ -48,19 +47,19 @@ def generateFilename(tno,cno):
     
 path = "Cluster/"
 list_p = []
+# tno 代表 team number
+# cno 代表 cluster number
 for tno in range(1,3):
     for cno in range(0,5):
         filepath = path+generateFilename(tno,cno)
         db = loadFile(filepath)
         ps = PrefixSpan(db)
-        # 输出频数大于等于1的序列（无序）
-#        print(ps.frequent(1))
-        # 输出频数前5的序列（降序）
         for x in range(0,10):
             list_p.append( Pattern(ps.topk(10)[x][0], ps.topk(10)[x][1]) )
+        # 输出当前Cluster中出现频率最高的10个Pattern
         # print(ps.topk(10))
-        # print("\n")
 
+# 对Score进行排序
 list_p = sorted(list_p, key=lambda x:x.score, reverse=True)
 print("#######################################")
 for x in list_p:
