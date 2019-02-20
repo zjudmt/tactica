@@ -8,6 +8,10 @@ offset = [0, 15000, 30000, 45000, 60000, 64767, 79767, 94767, 109767, 124767]
 total_length = 129154
 team_dict = {'阿根廷': 0, '巴西': 1,}
 team_list = ['Argentina', 'Brazil']
+flag_reverse = [[0, 1], [1, 0]]
+pitch_w = 1050
+pitch_h = 680
+halftime = 64766
 output_filename = ['position.txt', 'alphabet.txt', 'label.txt']
 position_filename = 'position.json'
 
@@ -56,6 +60,7 @@ def doFormats():
 			end = fmt[2]
 			label[start: end] = format_dict[fmt[0]]
 		# 保存label文件
+		print(label[200], format_dict)
 		np.savetxt(output_path[2], label, fmt = '%d')
 	pass
 
@@ -66,15 +71,24 @@ def doPosition():
 	# 创建一支队伍的空数组
 	empty_arr = np.empty((total_length, 10, 2), dtype = 'int')
 	# 两支队两个数组
-	position = [empty_arr, empty_arr]
+	position = np.array([empty_arr, empty_arr])
 	# 遍历读入的数据, 提取有效信息
+	print (data[0])
 	for frame, obj in enumerate(data):
 		# 先按时间遍历, 再按队伍遍历
 		for team_id, team in enumerate(team_list):
 			# 每一帧取前10个位置数据构成列表
 			team_data = [(d['y'], d['x']) for d in obj[team]][0: 10]
+			if frame < halftime:
+				flag = flag_reverse[0][team_id]
+			else:
+				flag = flag_reverse[1][team_id]
+			if flag == 1:
+				team_data = [(pitch_h - d[0], pitch_w - d[1]) for d in team_data ]
 			# 写入列表
 			position[team_id][frame] = team_data
+			if frame % 500 == 0:
+				print(frame, team_id, team, flag, team_data[0:3])
 			pass
 	# 数据遍历完成, 按照队伍输出
 	for team_id, team in enumerate(team_list):
@@ -111,6 +125,6 @@ def write(file, data):
 
 if __name__ == '__main__':
 	doFormats()
-	doPosition()
+	# doPosition()
 
 
